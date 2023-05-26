@@ -1,0 +1,44 @@
+body {
+    font-family: Arial, sans-serif;
+    margin: 0;
+    padding: 20px;
+    background-color: #f2f2f2;
+  }
+
+  #message-container {
+    height: 400px;
+    overflow-y: scroll;
+    border: 1px solid #ccc;
+    padding: 10px;
+    background-color: #fff;
+  }
+
+  #message-input {
+    width: 70%;
+    padding: 10px;
+    font-size: 14px;
+  }
+
+  #send-button {
+    padding: 10px 20px;
+    font-size: 14px;
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    cursor: pointer;
+  }
+
+  #send-button:hover {
+    background-color: #45a049;
+  }
+
+  .message {
+    margin-bottom: 10px;
+    padding: 8px;
+    background-color: #f2f2f2;
+    border-radius: 5px;
+  }
+
+  .message:last-child {
+    margin-bottom: 0;
+  }
