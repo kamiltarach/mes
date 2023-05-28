@@ -37,14 +37,16 @@
     $conn->close();
     ?>
   </div>
-  <input type="text" id="message-input" placeholder="Wpisz wiadomość" />
-  <select id="recipient-select">
-    <option value="">Wybierz rozmówcę</option>
-    <option value="user1">Użytkownik 1</option>
-    <option value="user2">Użytkownik 2</option>
-    <option value="user3">Użytkownik 3</option>
-  </select>
-  <button id="send-button">Wyślij</button>
+  <form action="mes.php" method="POST">
+      <input type="text" id="message-input" placeholder="Wpisz wiadomość" />
+    <select id="recipient-select">
+      <option value="" name=''>Wybierz rozmówcę</option>
+      <option value="user1" name='Kamil Tarach'>Kamil Tarach</option>
+      <option value="user2" name='Mścichuj Mickiewicz'>Mścichuj Mickiewicz</option>
+      <option value="user3" name='Jacek Marek'>Jacek Marek</option>
+    </select>
+    <button id="send-button">Wyślij</button>
+  </form>
 
   <script>
     // Funkcja do obsługi przycisku "Wyślij"
