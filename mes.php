@@ -38,12 +38,12 @@
     ?>
   </div>
   <form action="mes.php" method="POST">
-      <input type="text" id="message-input" placeholder="Wpisz wiadomość" />
+      <input type="text" id="message-input" name="message" placeholder="Wpisz wiadomość" />
     <select id="recipient-select">
       <option value="" name=''>Wybierz rozmówcę</option>
-      <option value="user1" name='Kamil Tarach'>Kamil Tarach</option>
-      <option value="user2" name='Mścichuj Mickiewicz'>Mścichuj Mickiewicz</option>
-      <option value="user3" name='Jacek Marek'>Jacek Marek</option>
+      <option value="user1" name='recipient'>Kamil Tarach</option>
+      <option value="user2" name='recipient'>Mścichuj Mickiewicz</option>
+      <option value="user3" name='recipient'>Jacek Marek</option>
     </select>
     <button id="send-button">Wyślij</button>
   </form>
