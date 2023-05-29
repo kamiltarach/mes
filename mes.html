@@ -1,0 +1,98 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Messenger</title>
+  <link rel="stylesheet" href="mes.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <meta charset="utf-8">
+</head>
+<body>
+  <div id="message-container"></div>
+  <form id="message-form" action="mes.php" method="POST">
+    <input type="text" id="message-input" name="message" placeholder="Wpisz wiadomość" />
+    <select id="recipient-select" name="recipient">
+      <option value="">Wybierz rozmówcę</option>
+      <option value="Kamil Tarach">Kamil Tarach</option>
+      <option value="Mścichuj Mickiewicz">Mścichuj Mickiewicz</option>
+      <option value="Jacek Marek">Jacek Marek</option>
+    </select>
+    <button type="submit" id="send-button">Wyślij</button>
+  </form>
+
+  <script>
+    // Funkcja do obsługi przycisku "Wyślij"
+    function sendMessage() {
+      var messageInput = document.getElementById("message-input");
+      var recipientSelect = document.getElementById("recipient-select");
+      var messageContainer = document.getElementById("message-container");
+
+      // Pobieranie wybranego rozmówcy
+      var recipient = recipientSelect.value;
+
+      // Sprawdzanie, czy wybrano rozmówcę
+      if (recipient === "") {
+        alert("Wybierz rozmówcę!");
+        return;
+      }
+
+      // Tworzenie nowego elementu wiadomości
+      var messageElement = document.createElement("div");
+      messageElement.innerText = recipient + ": " + messageInput.value;
+
+      // Dodawanie wiadomości do kontenera na początku
+      messageContainer.insertBefore(messageElement, messageContainer.firstChild);
+
+      // Czyszczenie pola tekstowego po wysłaniu wiadomości
+      messageInput.value = "";
+
+      // Wysłanie wiadomości do bazy danych
+      sendMessageToDatabase(recipient, messageElement.innerText);
+    }
+
+    // Funkcja do wysyłania wiadomości do bazy danych
+    function sendMessageToDatabase(recipient, message) {
+      // Wykorzystaj AJAX, aby wysłać dane do skryptu PHP
+      $.ajax({
+        url: "mes.php",
+        type: "POST",
+        data: {
+          recipient: recipient,
+          message: message
+        },
+        success: function(response) {
+          console.log(response);
+        },
+        error: function(xhr, status, error) {
+          console.log("Błąd zapisu wiadomości: " + error);
+        }
+      });
+    }
+
+    // Obsługa formularza
+    $("#message-form").submit(function(e) {
+      e.preventDefault(); // Zapobieganie domyślnej akcji formularza
+      sendMessage();
+    });
+
+    // Funkcja do pobierania i wyświetlania wiadomości z bazy danych
+    function fetchMessages() {
+      var messageContainer = document.getElementById("message-container");
+
+      // Wykorzystaj AJAX, aby pobrać wiadomości z serwera
+      $.ajax({
+        url: "fetch-messages.php", // Twój skrypt PHP do pobierania wiadomości
+        type: "GET",
+        success: function(response) {
+          messageContainer.innerHTML = response;
+        },
+        error: function(xhr, status, error) {
+          console.log("Błąd pobierania wiadomości: " + error);
+        }
+      });
+    }
+
+    // Wywołaj funkcję fetchMessages co 5 sekund
+    setInterval(fetchMessages, 5000);
+  </script>
+</body>
+</html>
