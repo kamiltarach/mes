@@ -5,11 +5,17 @@
   <link rel="stylesheet" href="mes.css">
   <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
   <meta charset="utf-8">
+  <link rel="icon" href="logo.png">
 </head>
 <body>
+  <header>
+    <h1>Messenger</h1>
+  </header>
   <div id="message-container"></div>
   <form id="message-form" action="mes.php" method="POST">
-    <input type="text" id="message-input" name="message" placeholder="Wpisz wiadomość" />
+    <!--miejsce wiadomosci-->
+    <input type="text" id="message-input" name="message" placeholder="Wpisz wiadomość">
+    <!--wybieranie rozmowcy-->
     <select id="recipient-select" name="recipient">
       <option value="">Wybierz rozmówcę</option>
       <option value="Kamil Tarach">Kamil Tarach</option>
