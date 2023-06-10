@@ -19,7 +19,7 @@ $result = $conn->query($sql);
 // Wyświetlanie wiadomości
 if ($result->num_rows > 0) {
   while($row = $result->fetch_assoc()) {
-    echo "<div class='message'>" . $row["recipient"] . ": " . $row["message"] . "</div>";
+    echo "<div class='message'>" . $row["rozmowca"] . ": " . $row["wiadomosc"] . "</div>";
   }
 } else {
   echo "Brak wiadomości.";

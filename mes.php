@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
   }
 
   // Tworzenie zapytania SQL
-  $sql = "INSERT INTO messages (recipient, message) VALUES ('$recipient', '$message')";
+  $sql = "INSERT INTO messages (rozmowca, wiadomosc) VALUES ('$recipient', '$message')";
 
   // Wykonanie zapytania
   if ($conn->query($sql) === TRUE) {
