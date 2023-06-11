@@ -13,9 +13,7 @@
   </header>
   <div id="message-container"></div>
   <form id="message-form" action="mes.php" method="POST">
-    <!--miejsce wiadomosci-->
     <input type="text" id="message-input" name="message" placeholder="Wpisz wiadomość">
-    <!--wybieranie rozmowcy-->
     <select id="recipient-select" name="recipient">
       <option value="">Wybierz rozmówcę</option>
       <option value="Kamil Tarach">Kamil Tarach</option>
@@ -44,20 +42,13 @@
       // Tworzenie nowego elementu wiadomości
       var messageElement = document.createElement("div");
       messageElement.innerText = recipient + ": " + messageInput.value;
-
-      // Dodawanie wiadomości do kontenera na początku
       messageContainer.insertBefore(messageElement, messageContainer.firstChild);
-
-      // Czyszczenie pola tekstowego po wysłaniu wiadomości
       messageInput.value = "";
-
-      // Wysłanie wiadomości do bazy danych
       sendMessageToDatabase(recipient, messageElement.innerText);
     }
 
     // Funkcja do wysyłania wiadomości do bazy danych
     function sendMessageToDatabase(recipient, message) {
-      // Wykorzystaj AJAX, aby wysłać dane do skryptu PHP
       $.ajax({
         url: "mes.php",
         type: "POST",
@@ -76,7 +67,7 @@
 
     // Obsługa formularza
     $("#message-form").submit(function(e) {
-      e.preventDefault(); // Zapobieganie domyślnej akcji formularza
+      e.preventDefault();
       sendMessage();
     });
 
@@ -84,9 +75,8 @@
     function fetchMessages() {
       var messageContainer = document.getElementById("message-container");
 
-      // Wykorzystaj AJAX, aby pobrać wiadomości z serwera
       $.ajax({
-        url: "fetch-messages.php", // Twój skrypt PHP do pobierania wiadomości
+        url: "fetch-messages.php",
         type: "GET",
         success: function(response) {
           messageContainer.innerHTML = response;
@@ -96,8 +86,6 @@
         }
       });
     }
-
-    // Wywołaj funkcję fetchMessages co 5 sekund
     setInterval(fetchMessages, 1000);
   </script>
 </body>
