@@ -1,0 +1,64 @@
+/* Ogólne style dla wiadomości */
+#message-container {
+    height: 400px;
+    overflow-y: auto;
+    border: 1px solid #ccc;
+    padding: 10px;
+  }
+  
+  .message-element {
+    margin-bottom: 10px;
+    padding: 5px;
+    border-radius: 5px;
+  }
+  
+  .message-sender {
+    background-color: #e1f7e8;
+    text-align: right;
+  }
+  
+  .message-recipient {
+    background-color: #f0f0f0;
+    text-align: left;
+  }
+  
+  /* Style dla formularza i przycisków */
+  #message-form {
+    margin-top: 10px;
+  }
+  
+  #message-input {
+    width: 300px;
+    padding: 5px;
+  }
+  
+  #send-button {
+    padding: 5px 10px;
+    background-color: #4CAF50;
+    color: white;
+    border: none;
+    cursor: pointer;
+  }
+  
+  #send-button:hover {
+    background-color: #45a049;
+  }
+  
+  /* Style dla linków rozmówców */
+  #recipient-container {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-right: 20px;
+  }
+  
+  .recipient-link {
+    margin-bottom: 5px;
+    text-decoration: none;
+    color: #000;
+  }
+  
+  .recipient-link:hover {
+    text-decoration: underline;
+  }
+  
