@@ -1,11 +1,13 @@
 body {
   font-family: Arial, sans-serif;
-  margin: 0;
-  padding: 20px;
+  margin: 15px;
   background-color: #f2f2f2;
 }
-
-header h1{
+#all-about-mess{
+  display: flex;
+}
+#header h1{
+  flex-basis: 1fr;
   padding: 10px;
   border: 2px solid #4CAF50;
   border-radius: 20px;
@@ -14,21 +16,19 @@ header h1{
   text-align: center;
   background-color: #75f27b;
 }
-
 #message-container {
-  height: 400px;
+  height: 450px;
+  flex-grow: 1;
+  flex-basis: 80%;
   overflow-y: scroll;
   border: 1px solid #ccc;
   padding: 10px;
   background-color: #fff;
 }
-
 #message-input {
-  width: 70%;
   padding: 10px;
   font-size: 14px;
 }
-
 #send-button {
   padding: 10px 20px;
   font-size: 14px;
@@ -37,18 +37,32 @@ header h1{
   border: none;
   cursor: pointer;
 }
-
 #send-button:hover {
   background-color: #45a049;
 }
-
-.message {
+.message-form{
+  flex-basis: 10%;
+}
+.message{
   margin-bottom: 10px;
   padding: 8px;
   background-color: #f2f2f2;
   border-radius: 5px;
 }
-
 .message:last-child {
   margin-bottom: 0;
+}
+.recipient-link{
+  text-decoration: none;
+  padding: 15px;
+  width: 100%;
+  text-align: center;
+  background-color: #45a049;
+  color: white;
+  margin-top: 20px;
+  margin-bottom: 10px;
+}
+#recipient-container{
+  flex-basis: 20%;
+  margin: 20px;
 }

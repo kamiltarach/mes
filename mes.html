@@ -8,47 +8,55 @@
   <link rel="icon" href="logo.png">
 </head>
 <body>
-  <header>
+  <div id="header">
     <h1>Messenger</h1>
-  </header>
-  <div id="message-container"></div>
-  <form id="message-form" action="mes.php" method="POST">
-    <input type="text" id="message-input" name="message" placeholder="Wpisz wiadomość">
-    <select id="recipient-select" name="recipient">
-      <option value="">Wybierz rozmówcę</option>
-      <option value="Kamil Tarach">Kamil Tarach</option>
-      <option value="Mścichuj Mickiewicz">Mścichuj Mickiewicz</option>
-      <option value="Jacek Marek">Jacek Marek</option>
-    </select>
-    <button type="submit" id="send-button">Wyślij</button>
-  </form>
-
+  </div>
+  <section id="all-about-mess">
+    <div id="recipient-container">
+      <a href="#" class="recipient-link" data-recipient="Kamil Tarach">Kamil Tarach</a><br><br><br>
+      <a href="#" class="recipient-link" data-recipient="Mścichuj Mickiewicz">Mścichuj Mickiewicz</a><br><br><br>
+      <a href="#" class="recipient-link" data-recipient="Jacek Marek">Jacek Marek</a><br><br><br>
+      <a href="#" class="recipient-link" data-recipient="Fiutek Słowacki">Fiutek Słowacki</a><br><br><br>
+    </div>
+    <div id="message-container"></div>
+    <form class="message-form" action="mes.php" method="POST">
+      <input type="text" id="message-input" name="message" placeholder="Wpisz wiadomość">
+      <button type="submit" id="send-button">Wyślij</button>
+    </form>
+  </section>
   <script>
     // Funkcja do obsługi przycisku "Wyślij"
     function sendMessage() {
       var messageInput = document.getElementById("message-input");
-      var recipientSelect = document.getElementById("recipient-select");
+      var recipientContainer = document.getElementById("recipient-container");
       var messageContainer = document.getElementById("message-container");
 
       // Pobieranie wybranego rozmówcy
-      var recipient = recipientSelect.value;
+      var recipient = recipientContainer.dataset.selectedRecipient;
 
       // Sprawdzanie, czy wybrano rozmówcę
-      if (recipient === "") {
+      if (!recipient) {
         alert("Wybierz rozmówcę!");
         return;
       }
 
       // Tworzenie nowego elementu wiadomości
       var messageElement = document.createElement("div");
-      messageElement.innerText = recipient + ": " + messageInput.value;
+      messageElement.innerText = messageInput.value;
+
+      // Dodawanie wiadomości do kontenera na początku
       messageContainer.insertBefore(messageElement, messageContainer.firstChild);
+
+      // Czyszczenie pola tekstowego po wysłaniu wiadomości
       messageInput.value = "";
+
+      // Wysłanie wiadomości do bazy danych
       sendMessageToDatabase(recipient, messageElement.innerText);
     }
 
     // Funkcja do wysyłania wiadomości do bazy danych
     function sendMessageToDatabase(recipient, message) {
+      // Wykorzystaj AJAX, aby wysłać dane do skryptu PHP
       $.ajax({
         url: "mes.php",
         type: "POST",
@@ -65,9 +73,24 @@
       });
     }
 
+    // Obsługa kliknięcia na hiperłącze rozmówcy
+    $(".recipient-link").click(function(e) {
+      e.preventDefault(); // Zapobieganie domyślnej akcji kliknięcia
+
+      // Usunięcie zaznaczenia ze wszystkich hiperłączy
+      $(".recipient-link").removeClass("selected");
+
+      // Zaznaczenie wybranego rozmówcy
+      $(this).addClass("selected");
+
+      // Zapisanie wybranego rozmówcy w atrybucie data-recipient kontenera
+      var recipient = $(this).data("recipient");
+      $("#recipient-container").attr("data-selected-recipient", recipient);
+    });
+
     // Obsługa formularza
-    $("#message-form").submit(function(e) {
-      e.preventDefault();
+    $(".message-form").submit(function(e) {
+      e.preventDefault(); // Zapobieganie domyślnej akcji formularza
       sendMessage();
     });
 
@@ -75,8 +98,9 @@
     function fetchMessages() {
       var messageContainer = document.getElementById("message-container");
 
+      // Wykorzystaj AJAX, aby pobrać wiadomości z serwera
       $.ajax({
-        url: "fetch-messages.php",
+        url: "fetch-messages.php", // Twój skrypt PHP do pobierania wiadomości
         type: "GET",
         success: function(response) {
           messageContainer.innerHTML = response;
@@ -86,7 +110,9 @@
         }
       });
     }
-    setInterval(fetchMessages, 1000);
+
+    // Wywołaj funkcję fetchMessages co 5 sekund
+    setInterval(fetchMessages, 500);
   </script>
 </body>
 </html>
