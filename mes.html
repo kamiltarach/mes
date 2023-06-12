@@ -11,20 +11,51 @@
   <div id="header">
     <h1>Messenger</h1>
   </div>
-  <section id="all-about-mess">
     <div id="recipient-container">
       <a href="#" class="recipient-link" data-recipient="Kamil Tarach">Kamil Tarach</a><br><br><br>
       <a href="#" class="recipient-link" data-recipient="Mścichuj Mickiewicz">Mścichuj Mickiewicz</a><br><br><br>
       <a href="#" class="recipient-link" data-recipient="Jacek Marek">Jacek Marek</a><br><br><br>
       <a href="#" class="recipient-link" data-recipient="Fiutek Słowacki">Fiutek Słowacki</a><br><br><br>
     </div>
+    <div id="recipient-name"></div>
     <div id="message-container"></div>
     <form class="message-form" action="mes.php" method="POST">
       <input type="text" id="message-input" name="message" placeholder="Wpisz wiadomość">
       <button type="submit" id="send-button">Wyślij</button>
     </form>
-  </section>
+    <div class="null">
+
+    </div>
   <script>
+    //skrolowanie na dół
+    function scrollToBottom() {
+      var messageContainer = document.getElementById("message-container");
+      messageContainer.scrollTop = messageContainer.scrollHeight;
+    }
+
+    // Funkcja do aktualizacji nazwy rozmówcy
+    function updateRecipientName(recipient) {
+      var recipientNameElement = document.getElementById('recipient-name');
+      recipientNameElement.innerText = recipient;
+    }
+
+    // Obsługa kliknięcia na hiperłącze rozmówcy
+    $(".recipient-link").click(function(e) {
+      e.preventDefault(); // Zapobieganie domyślnej akcji kliknięcia
+
+      // Usunięcie zaznaczenia ze wszystkich hiperłączy
+      $(".recipient-link").removeClass("selected");
+
+      // Zaznaczenie wybranego rozmówcy
+      $(this).addClass("selected");
+
+      // Pobranie nazwy rozmówcy
+      var recipient = $(this).data("recipient");
+
+      // Aktualizacja nazwy rozmówcy
+      updateRecipientName(recipient);
+    });
+
     // Funkcja do obsługi przycisku "Wyślij"
     function sendMessage() {
       var messageInput = document.getElementById("message-input");
@@ -38,6 +69,7 @@
       if (!recipient) {
         alert("Wybierz rozmówcę!");
         return;
+        scrollToBottom();
       }
 
       // Tworzenie nowego elementu wiadomości
@@ -71,6 +103,7 @@
           console.log("Błąd zapisu wiadomości: " + error);
         }
       });
+      scrollToBottom();
     }
 
     // Obsługa kliknięcia na hiperłącze rozmówcy
@@ -111,7 +144,7 @@
       });
     }
 
-    // Wywołaj funkcję fetchMessages co 5 sekund
+    // Wywołaj funkcję fetchMessages co 0,5 sekundy
     setInterval(fetchMessages, 500);
   </script>
 </body>

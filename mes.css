@@ -1,25 +1,50 @@
 body {
   font-family: Arial, sans-serif;
-  margin: 15px;
+  margin: 0;
+  overflow: hidden;
+  width: 100%;
   background-color: #f2f2f2;
+  display: grid;
+  grid-template-columns: 1fr 5fr;
+  grid-template-rows: 1fr 50px 3fr 1fr 1fr;
+  grid-template-areas: 
+  "h h n"
+  "rc rn n"
+  "rc mc n"
+  "rc mf n";
 }
-#all-about-mess{
-  display: flex;
+#header{grid-area: h;}
+#recipient-container{grid-area: rc;}
+#recipient-name{grid-area: rn;}
+#message-container{grid-area: mc;}
+.message-form{grid-area: mf;}
+.null{grid-area: n;}
+/*---------------------------------*/
+#header{
+  text-align: center;
+}
+.null{
+  width: 20px;
 }
 #header h1{
-  flex-basis: 1fr;
-  padding: 10px;
+  padding-top: 10px;
+  padding-bottom: 10px;
   border: 2px solid #4CAF50;
-  border-radius: 20px;
-  letter-spacing: 12px;
+  border-radius: 15px;
+  letter-spacing: 8px;
   font-size: 250%;
-  text-align: center;
+  width: 100%;
   background-color: #75f27b;
 }
+#recipient-name{
+  text-align: center;
+  background-color: #45a049;
+  color: white;
+  padding: 8px;
+  font-size: 200%;
+}
 #message-container {
-  height: 450px;
-  flex-grow: 1;
-  flex-basis: 80%;
+  height: 400px;
   overflow-y: scroll;
   border: 1px solid #ccc;
   padding: 10px;
@@ -27,6 +52,7 @@ body {
 }
 #message-input {
   padding: 10px;
+  width: 90%;
   font-size: 14px;
 }
 #send-button {
@@ -39,9 +65,6 @@ body {
 }
 #send-button:hover {
   background-color: #45a049;
-}
-.message-form{
-  flex-basis: 10%;
 }
 .message{
   margin-bottom: 10px;
@@ -59,10 +82,9 @@ body {
   text-align: center;
   background-color: #45a049;
   color: white;
-  margin-top: 20px;
-  margin-bottom: 10px;
+  margin-top: 30px;
+  margin-bottom: 30px;
 }
 #recipient-container{
-  flex-basis: 20%;
   margin: 20px;
 }
