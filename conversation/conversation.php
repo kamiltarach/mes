@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
         
         // Przygotowanie i wykonanie zapytania wstawiającego do bazy danych
-        $stmt = $conn->prepare("INSERT INTO messages (sender, recipient, message) VALUES (?, ?, ?)");
+        $stmt = $conn->prepare("INSERT INTO messages (sender_id, recipient_id, message) VALUES (?, ?, ?)");
         $stmt->bind_param("sss", $username, $recipient, $message);
         
         if ($stmt->execute()) {
@@ -65,7 +65,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
     <div id="message-container"></div>
 
-    <form class="message-form" action="mes.php" method="POST">
+    <form class="message-form" action="mes.php?recipient=<?php echo $recipient; ?>" method="POST">
         <input type="text" id="message-input" name="message" placeholder="Wpisz wiadomość">
         <button type="submit" id="send-button">Wyślij</button>
     </form>
@@ -121,7 +121,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         function sendMessageToServer(sender, recipient, message) {
             // Wykorzystaj AJAX, aby wysłać dane do skryptu PHP
             $.ajax({
-                url: "mes.php",
+                url: "mes.php?recipient=<?php echo $recipient; ?>",
                 type: "POST",
                 data: {
                     sender: sender,
@@ -143,7 +143,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Wykorzystaj AJAX, aby pobrać wiadomości z serwera
             $.ajax({
-                url: "fetch-messages.php", // Twój skrypt PHP do pobierania wiadomości
+                url: "fetch-messages.php?sender=<?php echo $username; ?>&recipient=<?php echo $recipient; ?>", // Twój skrypt PHP do pobierania wiadomości
                 type: "GET",
                 success: function(response) {
                     // Wyczyszczenie kontenera na wiadomości
@@ -161,7 +161,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         messageElement.innerText = message.sender + ": " + message.message;
 
                         // Dodawanie odpowiedniego stylu CSS na podstawie nadawcy wiadomości
-                        if (message.sender === username) {
+                        if (message.sender === "<?php echo $username; ?>") {
                             messageElement.classList.add("message-sender");
                         } else {
                             messageElement.classList.add("message-recipient");

@@ -21,8 +21,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         // Przygotowanie połączenia do bazy danych (dostosuj dane logowania)
         $servername = "localhost";
         $username = "root";
-        $password = "password";
-        $database = "your_database_name";
+        $password = "";
+        $database = "mes";
 
         // Utworzenie połączenia
         $conn = new mysqli($servername, $username, $password, $database);
