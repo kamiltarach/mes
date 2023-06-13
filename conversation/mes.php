@@ -15,16 +15,26 @@ if ($mysqli->connect_error) {
 
 // Pobranie informacji o zalogowanym użytkowniku
 $username = $_SESSION['username'];
+$sender = $_POST['sender'];
+$recipient = $_POST['recipient'];
+$message = $_POST['message'];
 
 // Odczytanie danych wysłanej wiadomości
-if (isset($_POST['sender']) && isset($_POST['recipient']) && isset($_POST['message'])) {
-    $sender = $mysqli->real_escape_string($_POST['sender']);
-    $recipient = $mysqli->real_escape_string($_POST['recipient']);
-    $message = $mysqli->real_escape_string($_POST['message']);
+if (isset($sender) && isset($recipient) && isset($message)) {
+
+    // Pobranie ID użytkownika (sender) na podstawie nazwy użytkownika
+    $querySender = "SELECT id FROM users WHERE username = '$sender'";
+    $resultSender = $mysqli->query($querySender);
+    $senderID = $resultSender->fetch_assoc()['id'];
+    
+    // Pobranie ID rozmówcy (recipient) na podstawie nazwiska
+    $queryRecipient = "SELECT recipient_id FROM recipient WHERE surmane='$recipient'";
+    $resultRecipient = $mysqli->query($queryRecipient);
+    $recipientID = $resultRecipient->fetch_assoc()['recipient_id'];
 
     // Zapisanie wiadomości do bazy danych
-    $query = "INSERT INTO messages (sender_id, recipient_id, message) VALUES ('$sender', '$recipient', '$message')";
-    if ($mysqli->query($query) === TRUE) {
+    $queryInsert = "INSERT INTO messages (sender_id, recipient_id, message) VALUES ('$senderID', '$recipientID', '$message')";
+    if ($mysqli->query($queryInsert) === TRUE) {
         echo "Wiadomość została pomyślnie zapisana w bazie danych.";
     } else {
         echo "Błąd zapisu wiadomości: " . $mysqli->error;
