@@ -51,5 +51,6 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 
         <input type="submit" value="Zarejestruj">
     </form>
+    <p><a href="../mes.html">Powrót do strony głównej</a></p>
 </body>
 </html>
