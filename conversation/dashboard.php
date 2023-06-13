@@ -10,27 +10,36 @@ if (!isset($_SESSION['username'])) {
 // Pobranie informacji o zalogowanym użytkowniku
 $username = $_SESSION['username'];
 
-// Wyświetlanie linków do rozmówców
-$recipients = array(
-    "Kamil Tarach",
-    "Mścichuj Mickiewicz",
-    "Marzanka Nizinna",
-    "Fiutek Słowacki",
-    "Marek Marucha",
-    "Maciej Niemusiał",
-    "Dawid Nadsiadło",
-    "Jakub Przedczas",
-    "Bogusław Nieposłuszny"
-);
+// Połączenie z bazą danych
+$conn = new mysqli('localhost', 'root', '', 'mes');
+if ($conn->connect_error) {
+    die("Błąd połączenia z bazą danych: " . $conn->connect_error);
+}
 
+// Pobranie informacji o rozmówcach z bazy danych
+$query = "SELECT name, surmane FROM recipient";
+$result = $conn->query($query);
+
+// Przetwarzanie wyników zapytania
+$recipients = array();
+if ($result->num_rows > 0) {
+    while ($row = $result->fetch_assoc()) {
+        $recipient = $row['name'] . ' ' . $row['surmane'];
+        $recipients[] = $recipient;
+    }
+}
+
+// Zamknięcie połączenia z bazą danych
+$conn->close();
 ?>
 
 <!DOCTYPE html>
 <html>
 <head>
     <title>Dashboard</title>
+    <meta charset="utf-8">
     <link rel="stylesheet" href="style-dashboard.css">
-    <link rel="icon" href="logo.png">
+    <link rel="icon" href="../logo.png">
 </head>
 <body>
     <h2>Dashboard - Witaj, <?php echo $username; ?>!</h2>
@@ -43,5 +52,6 @@ $recipients = array(
             <?php } ?>
         </ul>
     </aside>
+    <p><a href="../mes.html">Powrót na strone główną</a></p>
 </body>
 </html>
