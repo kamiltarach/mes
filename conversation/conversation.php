@@ -37,7 +37,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Rozmowa z <?php echo $recipient; ?></title>
+    <title>Rozmowa z <?php echo urlencode(utf8_encode($recipient)); ?></title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="../logo.png">
 </head>
@@ -120,49 +120,48 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Funkcja do pobierania i wyświetlania wiadomości z serwera
         function fetchMessages() {
-            var messageContainer = document.getElementById("message-container");
+        var messageContainer = document.getElementById("message-container");
 
-            // Wykorzystaj AJAX, aby pobrać wiadomości z serwera
-            $.ajax({
-                url: "fetch-messages.php", // Twój skrypt PHP do pobierania wiadomości
-                type: "GET",
-                success: function(response) {
-                    // Wyczyszczenie kontenera na wiadomości
-                    messageContainer.innerHTML = "";
+        // Wykorzystaj AJAX, aby pobrać wiadomości z serwera
+        $.ajax({
+            url: "fetch-messages.php", // Twój skrypt PHP do pobierania wiadomości
+            type: "GET",
+            success: function(response) {
+                // Wyczyszczenie kontenera na wiadomości
+                messageContainer.innerHTML = "";
 
-                    // Parsowanie odpowiedzi jako obiekt JSON
-                    var messages = JSON.parse(response);
+                // Parsowanie odpowiedzi jako obiekt JSON
+                var messages = JSON.parse(response);
 
-                    // Wyświetlanie wiadomości
-                    for (var i = 0; i < messages.length; i++) {
-                        var message = messages[i];
+                // Wyświetlanie wiadomości
+                for (var i = 0; i < messages.length; i++) {
+                    var message = messages[i];
 
-                        // Tworzenie elementu wiadomości
-                        var messageElement = document.createElement("div");
-                        messageElement.innerText = message.sender + ": " + message.message;
+                    // Tworzenie elementu wiadomości
+                    var messageElement = document.createElement("div");
+                    messageElement.innerText = message.sender + ": " + message.message;
 
-                        // Dodawanie odpowiedniego stylu CSS na podstawie nadawcy wiadomości
-                        if (message.sender === "<?php echo $username; ?>") {
-                            messageElement.classList.add("message-sender");
-                        } else {
-                            messageElement.classList.add("message-recipient");
-                        }
-
-                        // Dodawanie wiadomości do kontenera
-                        messageContainer.appendChild(messageElement);
+                    // Dodawanie odpowiedniego stylu CSS na podstawie nadawcy wiadomości
+                    if (message.sender === username) {
+                        messageElement.classList.add("message-sender");
+                    } else {
+                        messageElement.classList.add("message-recipient");
                     }
 
-                    // Przewiń do ostatniej wiadomości
-                    scrollToBottom();
-                },
-                error: function(xhr, status, error) {
-                    console.log("Błąd pobierania wiadomości: " + error);
+                    // Dodawanie wiadomości do kontenera
+                    messageContainer.appendChild(messageElement);
                 }
-            });
-        }
 
-        // Wywołaj funkcję fetchMessages co 0,5 sekundy
-        setInterval(fetchMessages, 1000);
+                // Przewiń do ostatniej wiadomości
+                scrollToBottom();
+            },
+            error: function(xhr, status, error) {
+                console.log("Błąd pobierania wiadomości: " + error);
+            }
+        });
+    }
+    // Wywołaj funkcję fetchMessages co 0,5 sekundy
+    setInterval(fetchMessages, 1000);
     </script>
 </body>
 </html>

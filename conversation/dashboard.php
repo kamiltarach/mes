@@ -47,9 +47,21 @@ $conn->close();
     <aside>
         <h3>Wybierz rozmówcę:</h3>
         <ul>
-            <?php foreach ($recipients as $recipient) { ?>
-                <li><a href="conversation.php?recipient=<?php echo urlencode($recipient); ?>"><?php echo $recipient; ?></a></li>
-            <?php } ?>
+        <?php foreach ($recipients as $recipient) { ?>
+            <li>
+                <a href="#" onclick="submitForm('<?php echo urlencode(utf8_encode($recipient)); ?>'); return false;"><?php echo $recipient; ?></a>
+                <form id="form-<?php echo urlencode(utf8_encode($recipient)); ?>" action="conversation.php" method="POST" style="display: none;">
+                    <input type="hidden" name="recipient" value="<?php echo urlencode(utf8_encode($recipient)); ?>">
+                </form>
+            </li>
+        <?php } ?>
+
+        <script>
+            function submitForm(recipient) {
+                document.getElementById('form-' + recipient).submit();
+                window.location.href = 'conversation.php?recipient=' + encodeURIComponent(recipient);
+            }
+        </script>
         </ul>
     </aside>
     <p><a href="../mes.html">Powrót na strone główną</a></p>
