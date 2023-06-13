@@ -22,19 +22,18 @@ $result = $conn->query($query);
 
 // Przetwarzanie wyników zapytania
 $recipients = array();
-if ($result->num_rows > 0) {
-    while ($row = $result->fetch_assoc()) {
-        $recipient = $row['name'] . ' ' . $row['surmane'];
-        $recipients[] = $recipient;
-    }
+while ($row = $result->fetch_assoc()) {
+    $name = utf8_encode($row['name']);
+    $surname = utf8_encode($row['surmane']);
+    $recipient = $name.' '.$surname;
+    $recipients[] = $recipient;
 }
-
 // Zamknięcie połączenia z bazą danych
 $conn->close();
 ?>
 
 <!DOCTYPE html>
-<html>
+<html lang="pl">
 <head>
     <title>Dashboard</title>
     <meta charset="utf-8">
@@ -49,13 +48,12 @@ $conn->close();
         <ul>
         <?php foreach ($recipients as $recipient) { ?>
             <li>
-                <a href="#" onclick="submitForm('<?php echo urlencode(utf8_encode($recipient)); ?>'); return false;"><?php echo $recipient; ?></a>
-                <form id="form-<?php echo urlencode(utf8_encode($recipient)); ?>" action="conversation.php" method="POST" style="display: none;">
-                    <input type="hidden" name="recipient" value="<?php echo urlencode(utf8_encode($recipient)); ?>">
+                <a href="#" onclick="submitForm('<?php echo urlencode(utf8_decode($recipient)); ?>'); return false;"><?php echo $recipient; ?></a>
+                <form id="form-<?php echo urlencode(utf8_decode($recipient)); ?>" action="conversation.php" method="POST" style="display: none;">
+                    <input type="hidden" name="recipient" value="<?php echo urlencode(utf8_decode($recipient)); ?>">
                 </form>
             </li>
         <?php } ?>
-
         <script>
             function submitForm(recipient) {
                 document.getElementById('form-' + recipient).submit();
