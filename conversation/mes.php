@@ -7,39 +7,57 @@ if (!isset($_SESSION['username'])) {
     exit();
 }
 
-// Połączenie z bazą danych
-$mysqli = new mysqli("localhost", "root", "", "mes");
-if ($mysqli->connect_error) {
-    die("Błąd połączenia z bazą danych: " . $mysqli->connect_error);
-}
-
 // Pobranie informacji o zalogowanym użytkowniku
 $username = $_SESSION['username'];
-$sender = $_POST['sender'];
-$recipient = $_POST['recipient'];
-$message = $_POST['message'];
 
-// Odczytanie danych wysłanej wiadomości
-if (isset($sender) && isset($recipient) && isset($message)) {
+// Odczytanie wybranego rozmówcy z parametru POST
+$recipient = $_POST['recipient'] ?? '';
 
-    // Pobranie ID użytkownika (sender) na podstawie nazwy użytkownika
-    $querySender = "SELECT id FROM users WHERE username = '$sender'";
-    $resultSender = $mysqli->query($querySender);
-    $senderID = $resultSender->fetch_assoc()['id'];
-    
-    // Pobranie ID rozmówcy (recipient) na podstawie nazwiska
-    $queryRecipient = "SELECT recipient_id FROM recipient WHERE surmane='$recipient'";
-    $resultRecipient = $mysqli->query($queryRecipient);
-    $recipientID = $resultRecipient->fetch_assoc()['recipient_id'];
+// Obsługa wysyłania wiadomości
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    if (isset($_POST['message'])) {
+        $message = $_POST['message'];
 
-    // Zapisanie wiadomości do bazy danych
-    $queryInsert = "INSERT INTO messages (sender_id, recipient_id, message) VALUES ('$senderID', '$recipientID', '$message')";
-    if ($mysqli->query($queryInsert) === TRUE) {
-        echo "Wiadomość została pomyślnie zapisana w bazie danych.";
-    } else {
-        echo "Błąd zapisu wiadomości: " . $mysqli->error;
+        // Przygotowanie połączenia do bazy danych (dostosuj dane logowania)
+        $servername = "localhost";
+        $username = "root";
+        $password = "password";
+        $database = "your_database_name";
+
+        // Utworzenie połączenia
+        $conn = new mysqli($servername, $username, $password, $database);
+
+        // Sprawdzenie połączenia
+        if ($conn->connect_error) {
+            die("Błąd połączenia z bazą danych: " . $conn->connect_error);
+        }
+
+        // Przygotowanie zapytania SQL
+        $sql = "INSERT INTO messages (sender_id, recipient_id, message) VALUES (?, ?, ?)";
+
+        // Utworzenie prepared statement
+        $stmt = $conn->prepare($sql);
+
+        // Sprawdzenie poprawności prepared statement
+        if ($stmt === false) {
+            die("Błąd przygotowywania zapytania SQL: " . $conn->error);
+        }
+
+        // Wiązanie parametrów z wartościami
+        $sender_id = 1; // ID zalogowanego użytkownika - dostosuj do swojej implementacji
+        $recipient_id = 2; // ID rozmówcy - dostosuj do swojej implementacji
+        $stmt->bind_param("iis", $sender_id, $recipient_id, $message);
+
+        // Wykonanie zapytania
+        if ($stmt->execute()) {
+            echo "Wiadomość została zapisana w bazie danych";
+        } else {
+            echo "Błąd zapisu wiadomości do bazy danych: " . $stmt->error;
+        }
+
+        // Zamknięcie połączenia i zwolnienie zasobów
+        $stmt->close();
+        $conn->close();
     }
 }
-
-$mysqli->close();
 ?>
