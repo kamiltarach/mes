@@ -62,7 +62,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 </head>
 <body>
     <h2>Rozmowa z <?php echo $recipient; ?></h2>
-
+    <div class="user"><?php 
+    echo $username." | ";
+    $parts = explode(" ", $recipient);
+    $lastname = $parts[count($parts) - 1];
+    echo $lastname;   
+    ?></div>
     <div id="message-container"></div>
 
     <form class="message-form" action="mes.php?recipient=<?php echo $recipient; ?>" method="POST">

@@ -35,10 +35,21 @@ if ($stmt === false) {
     die("Błąd przygotowywania zapytania SQL: " . $conn->error);
 }
 
-// Wiązanie parametrów z wartościami
-$sender_id = 1; // ID zalogowanego użytkownika - dostosuj do swojej implementacji
-$recipient_id = 2; // ID rozmówcy - dostosuj do swojej implementacji
-$stmt->bind_param("iiii", $sender_id, $recipient_id, $recipient_id, $sender_id);
+// Wiązanie parametrów z wartościami - sedner/user
+$querySender = "SELECT id FROM users WHERE username = '$username'";
+$resultSender = $conn->query($querySender);
+$senderID = $resultSender->fetch_assoc()['id'];
+
+// Wiązanie parametrów z wartościami - recipient
+//wyciaganie nazwiska z $recipient(imie i nazwisko)
+$parts = explode(" ", $recipient);
+$lastname = $parts[count($parts) - 1];
+
+$queryRecipient = "SELECT recipient_id FROM recipient WHERE surname = '$lastname'";
+$resultRecipient = $conn->query($queryRecipient);
+$recipientID = $resultRecipient->fetch_assoc()['recipient_id'];
+
+$stmt->bind_param("iiii", $senderID, $recipientID, $recipientID, $senderID);
 
 // Wykonanie zapytania
 if ($stmt->execute()) {

@@ -8,7 +8,7 @@ if (!isset($_SESSION['username'])) {
 }
 
 // Pobranie informacji o zalogowanym użytkowniku
-$username = $_SESSION['username'];
+$sender = $_SESSION['username'];
 
 // Odczytanie wybranego rozmówcy z parametru POST
 $recipient = $_POST['recipient'] ?? '';
@@ -43,9 +43,24 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             die("Błąd przygotowywania zapytania SQL: " . $conn->error);
         }
 
-        // Wiązanie parametrów z wartościami
-        $sender_id = 1; // ID zalogowanego użytkownika - dostosuj do swojej implementacji
-        $recipient_id = 2; // ID rozmówcy - dostosuj do swojej implementacji
+        // Wiązanie parametrów z wartościami - sedner/user
+        $querySender = "SELECT id FROM users WHERE username = '$username'";
+        $resultSender = $conn->query($querySender);
+        $senderID = $resultSender->fetch_assoc()['id'];
+
+        $sender_id = $senderID; 
+
+        // Wiązanie parametrów z wartościami - recipient
+        //wyciaganie nazwiska z $recipient(imie i nazwisko)
+        $parts = explode(" ", $recipient);
+        $lastname = $parts[count($parts) - 1];
+    
+        $queryRecipient = "SELECT recipient_id FROM recipient WHERE surname = '$lastname'";
+        $resultRecipient = $conn->query($queryRecipient);
+        $recipientID = $resultRecipient->fetch_assoc()['recipient_id'];
+
+        $recipient_id = $recipientID;
+
         $stmt->bind_param("iis", $sender_id, $recipient_id, $message);
 
         // Wykonanie zapytania
