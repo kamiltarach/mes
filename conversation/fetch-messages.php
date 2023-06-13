@@ -13,7 +13,7 @@ if ($conn->connect_error) {
 }
 
 // Pobieranie wiadomości z bazy danych
-$sql = "SELECT recipient.name,recipient.surmane, message FROM messages JOIN recipient ON recipient.recipient_id=message.recipient_id";
+$sql = "SELECT recipient.name, recipient.surmane, message FROM messages JOIN recipient ON recipient.recipient_id=messages.recipient_id;";
 $result = $conn->query($sql);
 
 // Wyświetlanie wiadomości
