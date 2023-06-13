@@ -23,8 +23,8 @@ $result = $conn->query($query);
 // Przetwarzanie wyników zapytania
 $recipients = array();
 while ($row = $result->fetch_assoc()) {
-    $name = utf8_encode($row['name']);
-    $surname = utf8_encode($row['surmane']);
+    $name = $row['name'];
+    $surname = $row['surmane'];
     $recipient = $name.' '.$surname;
     $recipients[] = $recipient;
 }
@@ -48,9 +48,9 @@ $conn->close();
         <ul>
         <?php foreach ($recipients as $recipient) { ?>
             <li>
-                <a href="#" onclick="submitForm('<?php echo urlencode(utf8_decode($recipient)); ?>'); return false;"><?php echo $recipient; ?></a>
-                <form id="form-<?php echo urlencode(utf8_decode($recipient)); ?>" action="conversation.php" method="POST" style="display: none;">
-                    <input type="hidden" name="recipient" value="<?php echo urlencode(utf8_decode($recipient)); ?>">
+                <a href="#" onclick="submitForm('<?php echo $recipient; ?>'); return false;"><?php echo $recipient; ?></a>
+                <form id="form-<?php echo $recipient; ?>" action="conversation.php" method="POST" style="display: none;">
+                    <input type="hidden" name="recipient" value="<?php echo $recipient; ?>">
                 </form>
             </li>
         <?php } ?>

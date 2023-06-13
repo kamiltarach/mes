@@ -23,13 +23,32 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     if (isset($_POST['message'])) {
         $message = $_POST['message'];
 
-        // Przykładowa logika zapisu wiadomości do bazy danych
-        // Poniżej użyłem tylko echo do wyświetlenia wiadomości w celach demonstracyjnych
-        // W praktyce musisz dostosować ten kod do swojej bazy danych
-        echo "Sender: $username, Recipient: $recipient, Message: $message";
-
-        // Możesz dodać kod zapisujący wiadomość w bazie danych tutaj
-        // np. używając biblioteki MySQLi lub PDO
+        // Połączenie z bazą danych (dostosuj do swojej konfiguracji)
+        $servername = "localhost";
+        $username = "root";
+        $password = "";
+        $database = "mes";
+        
+        $conn = new mysqli($servername, $username, $password, $database);
+        
+        // Sprawdzenie połączenia
+        if ($conn->connect_error) {
+            die("Błąd połączenia: " . $conn->connect_error);
+        }
+        
+        // Przygotowanie i wykonanie zapytania wstawiającego do bazy danych
+        $stmt = $conn->prepare("INSERT INTO messages (sender, recipient, message) VALUES (?, ?, ?)");
+        $stmt->bind_param("sss", $username, $recipient, $message);
+        
+        if ($stmt->execute()) {
+            echo "Wiadomość została pomyślnie dodana do bazy danych.";
+        } else {
+            echo "Błąd podczas dodawania wiadomości do bazy danych: " . $stmt->error;
+        }
+        
+        // Zamknięcie połączenia
+        $stmt->close();
+        $conn->close();
     }
 }
 ?>
@@ -37,7 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Rozmowa z <?php echo urlencode(utf8_encode($recipient)); ?></title>
+    <title>Rozmowa z <?php echo $recipient; ?></title>
     <link rel="stylesheet" href="style.css">
     <link rel="icon" href="../logo.png">
 </head>
@@ -95,7 +114,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Wywołanie funkcji do wysyłania wiadomości do serwera
             sendMessageToServer(sender, "<?php echo $recipient; ?>", message);
-        scrollToBottom()
+            scrollToBottom();
         }
 
         // Funkcja do wysyłania wiadomości do serwera
@@ -120,48 +139,49 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Funkcja do pobierania i wyświetlania wiadomości z serwera
         function fetchMessages() {
-        var messageContainer = document.getElementById("message-container");
+            var messageContainer = document.getElementById("message-container");
 
-        // Wykorzystaj AJAX, aby pobrać wiadomości z serwera
-        $.ajax({
-            url: "fetch-messages.php", // Twój skrypt PHP do pobierania wiadomości
-            type: "GET",
-            success: function(response) {
-                // Wyczyszczenie kontenera na wiadomości
-                messageContainer.innerHTML = "";
+            // Wykorzystaj AJAX, aby pobrać wiadomości z serwera
+            $.ajax({
+                url: "fetch-messages.php", // Twój skrypt PHP do pobierania wiadomości
+                type: "GET",
+                success: function(response) {
+                    // Wyczyszczenie kontenera na wiadomości
+                    messageContainer.innerHTML = "";
 
-                // Parsowanie odpowiedzi jako obiekt JSON
-                var messages = JSON.parse(response);
+                    // Parsowanie odpowiedzi jako obiekt JSON
+                    var messages = JSON.parse(response);
 
-                // Wyświetlanie wiadomości
-                for (var i = 0; i < messages.length; i++) {
-                    var message = messages[i];
+                    // Wyświetlanie wiadomości
+                    for (var i = 0; i < messages.length; i++) {
+                        var message = messages[i];
 
-                    // Tworzenie elementu wiadomości
-                    var messageElement = document.createElement("div");
-                    messageElement.innerText = message.sender + ": " + message.message;
+                        // Tworzenie elementu wiadomości
+                        var messageElement = document.createElement("div");
+                        messageElement.innerText = message.sender + ": " + message.message;
 
-                    // Dodawanie odpowiedniego stylu CSS na podstawie nadawcy wiadomości
-                    if (message.sender === username) {
-                        messageElement.classList.add("message-sender");
-                    } else {
-                        messageElement.classList.add("message-recipient");
+                        // Dodawanie odpowiedniego stylu CSS na podstawie nadawcy wiadomości
+                        if (message.sender === username) {
+                            messageElement.classList.add("message-sender");
+                        } else {
+                            messageElement.classList.add("message-recipient");
+                        }
+
+                        // Dodawanie wiadomości do kontenera
+                        messageContainer.appendChild(messageElement);
                     }
 
-                    // Dodawanie wiadomości do kontenera
-                    messageContainer.appendChild(messageElement);
+                    // Przewiń do ostatniej wiadomości
+                    scrollToBottom();
+                },
+                error: function(xhr, status, error) {
+                    console.log("Błąd pobierania wiadomości: " + error);
                 }
+            });
+        }
 
-                // Przewiń do ostatniej wiadomości
-                scrollToBottom();
-            },
-            error: function(xhr, status, error) {
-                console.log("Błąd pobierania wiadomości: " + error);
-            }
-        });
-    }
-    // Wywołaj funkcję fetchMessages co 0,5 sekundy
-    setInterval(fetchMessages, 1000);
+        // Wywołaj funkcję fetchMessages co 0,5 sekundy
+        setInterval(fetchMessages, 500);
     </script>
 </body>
 </html>
