@@ -1,20 +1,101 @@
-body{
+/* Resetowanie domyślnych styli */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+/* Styl dla całej strony */
+body {
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  background-color: #000;
+  color: #fff;
+  overflow-y: scroll; /* Dodanie możliwości przewijania w dół */
 }
-#header{
+
+/* Nagłówek */
+#header {
+  background-color: #111;
+  padding: 50px;
   text-align: center;
-  margin: auto;
 }
-ul{
-  display: flex;
+
+#header h1 {
+  font-size: 72px;
+  font-weight: bold;
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+/* Nawigacja */
+.nav {
+  background-color: #000;
+  text-align: center;
+  padding: 20px;
+  position: sticky;
+  top: 0;
+}
+
+.nav ul {
   list-style-type: none;
-  justify-content: space-evenly;
-  flex-direction: row;
 }
-li{
-  padding: 15px;
+
+.nav ul li {
+  display: inline-block;
+  margin-right: 30px;
 }
-li a{
-  font-size: 150%;
+
+.nav ul li a {
+  display: inline-block;
+  padding: 10px;
+  color: #fff;
   text-decoration: none;
+  font-size: 24px;
+  text-transform: uppercase;
+  transition: color 0.3s;
+}
+
+.nav ul li a:hover {
+  color: #ffd700;
+}
+
+/* Zawartość */
+#content {
+  padding: 50px;
+  background-color: #222;
+  margin: 50px;
+  text-align: center;
+}
+
+#content h2 {
+  font-size: 36px;
+  margin-bottom: 30px;
+  text-transform: uppercase;
+  color: #ffd700;
+}
+
+#content p {
+  margin-bottom: 20px;
+  line-height: 1.5;
+}
+
+/* Stopka */
+#footer {
+  background-color: #111;
+  color: #fff;
+  padding: 20px;
+  text-align: center;
+}
+
+#footer p {
+  font-size: 18px;
+}
+
+/* Efekt tekstu */
+.epic-text {
+  font-size: 48px;
+  font-weight: bold;
+  color: #ffd700;
+  text-transform: uppercase;
+  text-shadow: 4px 4px 8px rgba(0, 0, 0, 0.7);
 }

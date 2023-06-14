@@ -6,7 +6,9 @@ if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit();
 }
+
 $recipient = $_GET['recipient'];
+
 // Pobranie informacji o zalogowanym użytkowniku
 $username = $_SESSION['username'];
 
@@ -17,71 +19,95 @@ $dbPassword = "";
 $database = "mes";
 
 // Utworzenie połączenia
-$conn = new mysqli($servername, $dbUsername, $dbPassword, $database);
+$conn = mysqli_connect($servername, $dbUsername, $dbPassword, $database);
 
 // Sprawdzenie połączenia
-if ($conn->connect_error) {
-    die("Błąd połączenia z bazą danych: " . $conn->connect_error);
+if (!$conn) {
+    die("Błąd połączenia z bazą danych: " . mysqli_connect_error());
 }
 
 // Przygotowanie zapytania SQL
-$sql = "SELECT * FROM messages WHERE (sender_id = ? AND recipient_id = ?) OR (sender_id = ? AND recipient_id = ?) ORDER BY timestamp ASC";
+$sql = "SELECT m.sender_id, m.message
+        FROM messages AS m 
+        INNER JOIN users AS u ON u.id = m.sender_id 
+        WHERE (m.sender_id = ? AND m.recipient_id = ?) 
+        OR (m.sender_id = ? AND m.recipient_id = ?) 
+        ORDER BY m.timestamp ASC";
 
 // Utworzenie prepared statement
-$stmt = $conn->prepare($sql);
+$stmt = mysqli_prepare($conn, $sql);
 
 // Sprawdzenie poprawności prepared statement
-if ($stmt === false) {
-    die("Błąd przygotowywania zapytania SQL: " . $conn->error);
+if (!$stmt) {
+    die("Błąd przygotowywania zapytania SQL: " . mysqli_error($conn));
 }
 
 // Wiązanie parametrów z wartościami - sender
-$querySender = "SELECT id FROM users WHERE username = ?";
-$stmtSender = $conn->prepare($querySender);
-$stmtSender->bind_param("s", $username);
-$stmtSender->execute();
-$resultSender = $stmtSender->get_result();
-$senderID = $resultSender->fetch_assoc()['id'];
+$querySender = "SELECT username FROM users WHERE id = ?";
+$stmtSender = mysqli_prepare($conn, $querySender);
+mysqli_stmt_bind_param($stmtSender, "i", $senderID);
+
+// Pobranie ID zalogowanego użytkownika (sender)
+$querySenderID = "SELECT id FROM users WHERE username = ?";
+$stmtSenderID = mysqli_prepare($conn, $querySenderID);
+mysqli_stmt_bind_param($stmtSenderID, "s", $username);
+mysqli_stmt_execute($stmtSenderID);
+$resultSenderID = mysqli_stmt_get_result($stmtSenderID);
+$senderID = mysqli_fetch_assoc($resultSenderID)['id'];
 
 // Wiązanie parametrów z wartościami - recipient
-$parts = explode(" ", $recipient);
-$lastname = $parts[count($parts) - 1];
+$queryRecipient = "SELECT recipient_id FROM recipient WHERE CONCAT(name, ' ',surname) = ?";
+$queryRecipient = html_entity_decode($queryRecipient);
+$stmtRecipient = mysqli_prepare($conn, $queryRecipient);
+mysqli_stmt_bind_param($stmtRecipient, "s", $recipient);
 
-$queryRecipient = "SELECT recipient_id FROM recipient WHERE surname = ?";
-$stmtRecipient = $conn->prepare($queryRecipient);
-$stmtRecipient->bind_param("s", $lastname);
-$stmtRecipient->execute();
-$resultRecipient = $stmtRecipient->get_result();
-$recipientID = $resultRecipient->fetch_assoc()['recipient_id'];
+// Wiązanie parametrów z wartościami - sender i recipient
+mysqli_stmt_bind_param($stmt, "iiii", $senderID, $recipientID, $recipientID, $senderID);
 
-$stmt->bind_param("iiii", $senderID, $recipientID, $recipientID, $senderID);
+// Pobranie ID odbiorcy (recipient)
+mysqli_stmt_execute($stmtRecipient);
+$resultRecipient = mysqli_stmt_get_result($stmtRecipient);
+if (mysqli_num_rows($resultRecipient) > 0) {
+    $recipientID = mysqli_fetch_assoc($resultRecipient)['recipient_id'];
+} else {
+    die("Nie odnaleziono użytkownika o podanym odbiorcy.");
+}
 
 // Wykonanie zapytania
-if ($stmt->execute()) {
+if (mysqli_stmt_execute($stmt)) {
     // Pobranie wyników zapytania
-    $result = $stmt->get_result();
+    $result = mysqli_stmt_get_result($stmt);
 
     // Przygotowanie tablicy na wiadomości
     $messages = array();
 
     // Pobieranie wiadomości z wyników zapytania
-    while ($row = $result->fetch_assoc()) {
+    while ($row = mysqli_fetch_assoc($result)) {
+        $senderID = $row['sender_id'];
         $message = array(
-            'sender' => $row['sender_id'],
+            'sender' => '',
             'message' => $row['message']
         );
+
+        // Pobranie nazwy nadawcy
+        mysqli_stmt_execute($stmtSender);
+        mysqli_stmt_bind_result($stmtSender, $senderName);
+        mysqli_stmt_fetch($stmtSender);
+
+        $message['sender'] = $senderName;
+
         $messages[] = $message;
     }
 
-    // Zwrócenie wiadomości jako JSON
+    // Zwrócenie wiadomości jako odpowiedź JSON
     echo json_encode($messages);
 } else {
-    echo "Błąd pobierania wiadomości z bazy danych: " . $stmt->error;
+    die("Błąd wykonania zapytania: " . mysqli_stmt_error($stmt));
 }
 
-// Zamknięcie połączenia i zwolnienie zasobów
-$stmt->close();
-$stmtSender->close();
-$stmtRecipient->close();
-$conn->close();
+// Zamknięcie połączenia i zasobów
+mysqli_stmt_close($stmt);
+mysqli_stmt_close($stmtRecipient);
+mysqli_stmt_close($stmtSenderID);
+mysqli_close($conn);
 ?>

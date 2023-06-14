@@ -37,7 +37,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
 <html>
 <head>
     <title>Rejestracja</title>
-    <link rel="stylesheet" href="login_register.css">
+    <link rel="stylesheet" href="register.css">
     <link rel="icon" href="../logo.png">
 </head>
 <body>

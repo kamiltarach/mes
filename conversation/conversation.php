@@ -84,7 +84,7 @@ function getRecipientIdByLastName($conn, $recipient) {
 <html>
 <head>
     <title>Rozmowa z <?php echo $recipient; ?></title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="conversation.css">
     <link rel="icon" href="../logo.png">
 </head>
 <body>

@@ -43,25 +43,34 @@ $conn->close();
 <body>
     <h2>Dashboard - Witaj, <?php echo $username; ?>!</h2>
 
-    <aside>
-        <h3>Wybierz rozmówcę:</h3>
-        <ul>
-        <?php foreach ($recipients as $recipient) { ?>
-            <li>
-                <a href="#" onclick="submitForm('<?php echo $recipient; ?>'); return false;"><?php echo $recipient; ?></a>
-                <form id="form-<?php echo $recipient; ?>" action="conversation.php" method="POST" style="display: none;">
-                    <input type="hidden" name="recipient" value="<?php echo $recipient; ?>">
-                </form>
-            </li>
-        <?php } ?>
-        <script>
-            function submitForm(recipient) {
-                document.getElementById('form-' + recipient).submit();
-                window.location.href = 'conversation.php?recipient=' + encodeURIComponent(recipient);
-            }
-        </script>
-        </ul>
-    </aside>
-    <p><a href="../mes.html">Powrót na strone główną</a></p>
+    <div class="container">
+        <aside>
+            <h3>Wybierz rozmówcę:</h3>
+            <ul>
+            <?php foreach ($recipients as $recipient) { ?>
+                <li>
+                    <a href="#" onclick="submitForm('<?php echo $recipient; ?>'); return false;"><?php echo $recipient; ?></a>
+                    <form id="form-<?php echo $recipient; ?>" action="conversation.php" method="POST" style="display: none;">
+                        <input type="hidden" name="recipient" value="<?php echo $recipient; ?>">
+                    </form>
+                </li>
+            <?php } ?>
+            <script>
+                function submitForm(recipient) {
+                    document.getElementById('form-' + recipient).submit();
+                    window.location.href = 'conversation.php?recipient=' + encodeURIComponent(recipient);
+                }
+            </script>
+            </ul>
+        </aside>
+
+        <div class="content">
+            <h3>Witaj na stronie Dashboard!</h3>
+            <p>Tutaj możesz wybrać rozmówcę i rozpocząć konwersację.</p>
+            <img src="image.jpg" alt="Obrazek" width="200" height="200">
+            <p><a href="../mes.html">Powrót na stronę główną</a>
+        </div>
+    </div>
+
 </body>
 </html>
