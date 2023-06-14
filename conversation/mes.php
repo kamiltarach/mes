@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
 
         // Wiązanie parametrów z wartościami - sedner/user
-        $querySender = "SELECT id FROM users WHERE username = '$username'";
+        $querySender = "SELECT id FROM users WHERE username = '$sender'";
         $resultSender = $conn->query($querySender);
         $senderID = $resultSender->fetch_assoc()['id'];
 
@@ -60,10 +60,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Wykonanie zapytania
         if ($stmt->execute()) {
-            echo "Wiadomość została zapisana w bazie danych";
+            $response = array('success' => true, 'message' => 'Wiadomość została zapisana w bazie danych');
+            echo json_encode($response);
         } else {
-            echo "Błąd zapisu wiadomości do bazy danych: " . $stmt->error;
+            $response = array('success' => false, 'message' => 'Błąd zapisu wiadomości do bazy danych: ' . $stmt->error);
+            echo json_encode($response);
         }
+        
 
         // Zamknięcie połączenia i zwolnienie zasobów
         $stmt->close();
