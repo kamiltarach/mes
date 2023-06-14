@@ -25,34 +25,61 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
         // Połączenie z bazą danych (dostosuj do swojej konfiguracji)
         $servername = "localhost";
-        $username = "root";
+        $dbUsername = "root";
         $password = "";
         $database = "mes";
-        
-        $conn = new mysqli($servername, $username, $password, $database);
-        
+
+        $conn = new mysqli($servername, $dbUsername, $password, $database);
+
         // Sprawdzenie połączenia
         if ($conn->connect_error) {
             die("Błąd połączenia: " . $conn->connect_error);
         }
-        
+
         // Przygotowanie i wykonanie zapytania wstawiającego do bazy danych
         $stmt = $conn->prepare("INSERT INTO messages (sender_id, recipient_id, message) VALUES (?, ?, ?)");
-        $stmt->bind_param("sss", $username, $recipient, $message);
         
+        // Pobranie ID nadawcy i odbiorcy
+        $senderID = getUserIdByUsername($conn, $username);
+        $recipientID = getRecipientIdByLastName($conn, $recipient);
+
+        $stmt->bind_param("iis", $senderID, $recipientID, $message);
+
         if ($stmt->execute()) {
             echo "Wiadomość została pomyślnie dodana do bazy danych.";
         } else {
             echo "Błąd podczas dodawania wiadomości do bazy danych: " . $stmt->error;
         }
-        
+
         // Zamknięcie połączenia
         $stmt->close();
         $conn->close();
     }
 }
-?>
 
+// Funkcja do pobierania ID użytkownika na podstawie nazwy użytkownika
+function getUserIdByUsername($conn, $username) {
+    $stmt = $conn->prepare("SELECT id FROM users WHERE username = ?");
+    $stmt->bind_param("s", $username);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    return $row['id'];
+}
+
+// Funkcja do pobierania ID odbiorcy na podstawie nazwiska
+function getRecipientIdByLastName($conn, $recipient) {
+    $parts = explode(" ", $recipient);
+    $lastname = $parts[count($parts) - 1];
+
+    $stmt = $conn->prepare("SELECT recipient_id FROM recipient WHERE surname = ?");
+    $stmt->bind_param("s", $lastname);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $row = $result->fetch_assoc();
+    return $row['recipient_id'];
+}
+?>
 <!DOCTYPE html>
 <html>
 <head>
@@ -148,36 +175,41 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 
             // Wykorzystaj AJAX, aby pobrać wiadomości z serwera
             $.ajax({
-                url: "fetch-messages.php?sender=<?php echo $username; ?>&recipient=<?php echo $recipient; ?>", // Twój skrypt PHP do pobierania wiadomości
+                url: "fetch-messages.php?sender=<?php echo $username; ?>&recipient=<?php echo $recipient; ?>",
                 type: "GET",
                 success: function(response) {
-                    // Wyczyszczenie kontenera na wiadomości
-                    messageContainer.innerHTML = "";
+                    try {
+                        // Parsowanie odpowiedzi jako obiekt JSON
+                        var messages = JSON.parse(response);
 
-                    // Parsowanie odpowiedzi jako obiekt JSON
-                    var messages = JSON.parse(response);
+                        // Wyczyszczenie kontenera na wiadomości
+                        messageContainer.innerHTML = "";
 
-                    // Wyświetlanie wiadomości
-                    for (var i = 0; i < messages.length; i++) {
-                        var message = messages[i];
+                        // Wyświetlanie wiadomości
+                        for (var i = 0; i < messages.length; i++) {
+                            var message = messages[i];
 
-                        // Tworzenie elementu wiadomości
-                        var messageElement = document.createElement("div");
-                        messageElement.innerText = message.sender + ": " + message.message;
+                            // Tworzenie elementu wiadomości
+                            var messageElement = document.createElement("div");
+                            messageElement.innerText = message.sender + ": " + message.message;
 
-                        // Dodawanie odpowiedniego stylu CSS na podstawie nadawcy wiadomości
-                        if (message.sender === "<?php echo $username; ?>") {
-                            messageElement.classList.add("message-sender");
-                        } else {
-                            messageElement.classList.add("message-recipient");
+                            // Dodawanie odpowiedniego stylu CSS na podstawie nadawcy wiadomości
+                            if (message.sender === "<?php echo $username; ?>") {
+                                messageElement.classList.add("message-sender");
+                            } else {
+                                messageElement.classList.add("message-recipient");
+                            }
+
+                            // Dodawanie wiadomości do kontenera
+                            messageContainer.appendChild(messageElement);
                         }
 
-                        // Dodawanie wiadomości do kontenera
-                        messageContainer.appendChild(messageElement);
+                        // Przewiń do ostatniej wiadomości
+                        scrollToBottom();
+                    } catch (error) {
+                        console.log("Błąd parsowania odpowiedzi: " + error);
+                        console.log(response);
                     }
-
-                    // Przewiń do ostatniej wiadomości
-                    scrollToBottom();
                 },
                 error: function(xhr, status, error) {
                     console.log("Błąd pobierania wiadomości: " + error);
@@ -185,8 +217,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             });
         }
 
-        // Wywołaj funkcję fetchMessages co 0,5 sekundy
-        setInterval(fetchMessages, 500);
+        // Wywołaj funkcję fetchMessages co sekunde
+        setInterval(fetchMessages, 1000);
     </script>
 </body>
 </html>

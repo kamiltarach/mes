@@ -48,9 +48,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $resultSender = $conn->query($querySender);
         $senderID = $resultSender->fetch_assoc()['id'];
 
-        $sender_id = $senderID; 
-
-        // Wiązanie parametrów z wartościami - recipient
         //wyciaganie nazwiska z $recipient(imie i nazwisko)
         $parts = explode(" ", $recipient);
         $lastname = $parts[count($parts) - 1];
@@ -59,9 +56,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         $resultRecipient = $conn->query($queryRecipient);
         $recipientID = $resultRecipient->fetch_assoc()['recipient_id'];
 
-        $recipient_id = $recipientID;
-
-        $stmt->bind_param("iis", $sender_id, $recipient_id, $message);
+        $stmt->bind_param("iis", $senderID, $recipientID, $message);
 
         // Wykonanie zapytania
         if ($stmt->execute()) {

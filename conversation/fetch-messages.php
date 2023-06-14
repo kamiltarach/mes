@@ -6,18 +6,18 @@ if (!isset($_SESSION['username'])) {
     header("Location: login.php");
     exit();
 }
-
+$recipient = $_GET['recipient'];
 // Pobranie informacji o zalogowanym użytkowniku
 $username = $_SESSION['username'];
 
 // Przygotowanie połączenia do bazy danych (dostosuj dane logowania)
 $servername = "localhost";
-$username = "root";
-$password = "";
+$dbUsername = "root";
+$dbPassword = "";
 $database = "mes";
 
 // Utworzenie połączenia
-$conn = new mysqli($servername, $username, $password, $database);
+$conn = new mysqli($servername, $dbUsername, $dbPassword, $database);
 
 // Sprawdzenie połączenia
 if ($conn->connect_error) {
@@ -35,18 +35,23 @@ if ($stmt === false) {
     die("Błąd przygotowywania zapytania SQL: " . $conn->error);
 }
 
-// Wiązanie parametrów z wartościami - sedner/user
-$querySender = "SELECT id FROM users WHERE username = '$username'";
-$resultSender = $conn->query($querySender);
+// Wiązanie parametrów z wartościami - sender
+$querySender = "SELECT id FROM users WHERE username = ?";
+$stmtSender = $conn->prepare($querySender);
+$stmtSender->bind_param("s", $username);
+$stmtSender->execute();
+$resultSender = $stmtSender->get_result();
 $senderID = $resultSender->fetch_assoc()['id'];
 
 // Wiązanie parametrów z wartościami - recipient
-//wyciaganie nazwiska z $recipient(imie i nazwisko)
 $parts = explode(" ", $recipient);
 $lastname = $parts[count($parts) - 1];
 
-$queryRecipient = "SELECT recipient_id FROM recipient WHERE surname = '$lastname'";
-$resultRecipient = $conn->query($queryRecipient);
+$queryRecipient = "SELECT recipient_id FROM recipient WHERE surname = ?";
+$stmtRecipient = $conn->prepare($queryRecipient);
+$stmtRecipient->bind_param("s", $lastname);
+$stmtRecipient->execute();
+$resultRecipient = $stmtRecipient->get_result();
 $recipientID = $resultRecipient->fetch_assoc()['recipient_id'];
 
 $stmt->bind_param("iiii", $senderID, $recipientID, $recipientID, $senderID);
@@ -76,5 +81,7 @@ if ($stmt->execute()) {
 
 // Zamknięcie połączenia i zwolnienie zasobów
 $stmt->close();
+$stmtSender->close();
+$stmtRecipient->close();
 $conn->close();
 ?>

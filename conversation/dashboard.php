@@ -17,14 +17,14 @@ if ($conn->connect_error) {
 }
 
 // Pobranie informacji o rozmówcach z bazy danych
-$query = "SELECT name, surmane FROM recipient";
+$query = "SELECT name, surname FROM recipient";
 $result = $conn->query($query);
 
 // Przetwarzanie wyników zapytania
 $recipients = array();
 while ($row = $result->fetch_assoc()) {
     $name = $row['name'];
-    $surname = $row['surmane'];
+    $surname = $row['surname'];
     $recipient = $name.' '.$surname;
     $recipients[] = $recipient;
 }
