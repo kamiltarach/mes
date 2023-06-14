@@ -25,7 +25,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         echo "Rejestracja zakończona sukcesem.";
         header('Location: login.php');
     } else {
-        echo "Błąd rejestracji: " . $mysqli->error;
+        echo "<div class='error'>Błąd rejestracji: ".$mysqli->error."</div>";
     }
 
     // Zamknięcie połączenia

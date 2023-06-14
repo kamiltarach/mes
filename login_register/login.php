@@ -32,7 +32,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             $_SESSION['username'] = $username;
             header("Location: ../conversation/dashboard.php");
         } else {
-            echo "Błędne hasło.";
+            echo "<div class='error'>Błędne hasło.</div>";
         }
     } else {
         echo "Użytkownik o podanej nazwie nie istnieje.";
